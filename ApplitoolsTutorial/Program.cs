@@ -88,7 +88,8 @@ namespace ApplitoolsTutorial
 
 
             var hmap = new Dictionary<string, string>();
-            string baseUrl = "file:///Users/raja.rao/apps/acme-demo-app/";
+            //string baseUrl = "file:///Users/raja.rao/apps/acme-demo-app/";
+            string baseUrl = "https://applitools.com/tutorials/";
             string viewportWidth = "1200";
             string viewportHeight = "750";
             string testName = "Login Page C# Quickstart";
