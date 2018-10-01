@@ -18,6 +18,10 @@ namespace ApplitoolsTutorial
             // Initialize the eyes SDK and set your private API key.
             var eyes = new Eyes();
 
+            //scroll and take full page screenshot
+            eyes.ForceFullPageScreenshot = true;
+
+
             // Hard code the Applitools API key or get it from the environment (see the Tutorial for details)
             // eyes.ApiKey = "Your_APIKEY";
             eyes.ApiKey = Environment.GetEnvironmentVariable("APPLITOOLS_API_KEY"); 
@@ -88,10 +92,9 @@ namespace ApplitoolsTutorial
 
 
             var hmap = new Dictionary<string, string>();
-            //string baseUrl = "file:///Users/raja.rao/apps/acme-demo-app/";
-            string baseUrl = "https://applitools.com/tutorials/";
-            string viewportWidth = "1200";
-            string viewportHeight = "750";
+            string baseUrl = "https://demo.applitools.com/";
+            string viewportWidth = "1000";
+            string viewportHeight = "600";
             string testName = "Login Page C# Quickstart";
             string appName = "ACME app C#";
             string loginPageName = "Login Page C#";
