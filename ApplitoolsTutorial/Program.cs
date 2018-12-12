@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing; //Required for eyes.Open API
 using Applitools.Selenium; //Applitools Selenium SDK
 using OpenQA.Selenium.Chrome; // Selenium's Chrome browser SDK
+using Applitools; //For FileLogHandler
 
 
 namespace ApplitoolsTutorial
@@ -17,6 +18,9 @@ namespace ApplitoolsTutorial
 
             // Initialize the eyes SDK and set your private API key.
             var eyes = new Eyes();
+
+            //Store logs in <project>/bin/Debug/Applitools.log
+            eyes.SetLogHandler(new FileLogHandler(@"./Applitools.log", true, true));
 
             //scroll and take full page screenshot
             eyes.ForceFullPageScreenshot = true;
