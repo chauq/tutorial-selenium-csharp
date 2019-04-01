@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing; //Required for eyes.Open API
-using Applitools.Selenium; //Applitools Selenium SDK
-using OpenQA.Selenium.Chrome; // Selenium's Chrome browser SDK
-using Applitools; //For FileLogHandler
+﻿using Applitools;
+using Applitools.Selenium;
+using Applitools.VisualGrid;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using Configuration = Applitools.Selenium.Configuration;
 
 
 namespace ApplitoolsTutorial
@@ -11,138 +11,75 @@ namespace ApplitoolsTutorial
 
     class Program
     {
-        static void Main(string[] args)
+        public static void Main()
         {
-            // Open a Chrome browser.
-            var driver = new ChromeDriver();
-
-            // Initialize the eyes SDK and set your private API key.
-            var eyes = new Eyes();
-
-            //Store logs in <project>/bin/Debug/Applitools.log
-            eyes.SetLogHandler(new FileLogHandler(@"./Applitools.log", true, true));
-
-            //scroll and take full page screenshot
-            eyes.ForceFullPageScreenshot = true;
-
-
-            // Hard code the Applitools API key or get it from the environment (see the Tutorial for details)
-            // eyes.ApiKey = "Your_APIKEY";
-            eyes.ApiKey = Environment.GetEnvironmentVariable("APPLITOOLS_API_KEY"); 
-
-            try
-            {
-                // Call getTestInfoForPart to get the appropriate test information.
-                Dictionary<string, string> testInfo = GetTestInfoForPart(args);
-
-
-                // Start the test by setting AUT's name, window or the page name that's being tested, viewport width and height
-                eyes.Open(driver, testInfo["appName"], testInfo["windowName"], new Size(
-                        Int32.Parse(testInfo["viewportWidth"]), Int32.Parse(testInfo["viewportHeight"])));
-
-
-                // Navigate the browser to the "hello world!" web-site.
-                driver.Url = testInfo["url"];
-
-                // Visual checkpoint #1.
-                eyes.CheckWindow(testInfo["windowName"]);
-
-                // End the test.
-                eyes.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            finally
-            {
-                // Close the browser.
-                driver.Quit();
-
-                // If the test was aborted before eyes.Close was called, ends the test as aborted.
-                eyes.AbortIfNotClosed();
-            }
+            Program program = new Program();
+            program.Run();
         }
 
-
-        /**
-         * getTestInfoForPart
-         * 
-         * This method returns details of the test for different parts of the tutorial.
-         * 
-         * This method receives tutorial part information from the command prompt such
-         * as "1", "2" etc., and then returns test app's URL, app-name, test-name,
-         * viewportHeight, viewportWidth and URL information for that part of the
-         * tutorial. This information is then used by the caller to run different tests.
-         * 
-         * @param args String[] from the CLI such as "1", "2"
-         * 
-         * @return A dictionary of test app's URL, app-name, test-name, viewportHeight,
-         *         viewportWidth.
-         */
-        public static Dictionary<string, string> GetTestInfoForPart(string[] args)
+        private void Run()
         {
-            // There are 4 different parts of the tests. Default it to "1".
-            string testPartNumber = "1";
+            // Create a new webdriver
+            IWebDriver webDriver = new ChromeDriver();
 
-            // If test part number is specified through CLI, use that
-            if (args.Length != 0)
-            {
-                testPartNumber = args[0];
-            }
-            Console.WriteLine("Running tests for tutorial part: " + testPartNumber);
+            // Navigate to the url we want to test
+            webDriver.Url = "https:/demo.applitools.com";
 
-            int testNumber = Int32.Parse(testPartNumber);
+            // ⭐️ Note to see visual bugs, run the test using the above URL for the 1st run.
+            //but then change the above URL to https://demo.applitools.com/index_v2.html (for the 2nd run)
+
+            // Create a runner with concurrency of 10
+            VisualGridRunner runner = new VisualGridRunner(10);
+
+            // Create Eyes object with the runner, meaning it'll be a Visual Grid eyes.
+            Eyes eyes = new Eyes(runner);
+
+            //Set the Applitools API KEY here or as an environment variable "APPLITOOLS_API_KEY"
+            eyes.ApiKey = "APPLITOOLS_API_KEY";
 
 
-            var hmap = new Dictionary<string, string>();
-            string baseUrl = "https://demo.applitools.com/";
-            string viewportWidth = "1000";
-            string viewportHeight = "600";
-            string testName = "Login Page C# Quickstart";
-            string appName = "ACME app C#";
-            string loginPageName = "Login Page C#";
-            string appPageName = "App Page C#";
-            switch (testNumber)
-            {
-                default:
-                case 1:
-                    hmap.Add("url", baseUrl + "index.html");
-                    hmap.Add("appName", appName);
-                    hmap.Add("windowName", loginPageName);
-                    hmap.Add("testName", testName);
-                    hmap.Add("viewportWidth", viewportWidth);
-                    hmap.Add("viewportHeight", viewportHeight);
-                    break;
-                case 2:
-                    hmap.Add("url", baseUrl + "index_v2.html");
-                    hmap.Add("appName", appName);
-                    hmap.Add("windowName", loginPageName);
-                    hmap.Add("testName", testName);
-                    hmap.Add("viewportWidth", viewportWidth);
-                    hmap.Add("viewportHeight", viewportHeight);
-                    break;
-                case 3:
-                    hmap.Add("url", baseUrl + "app.html");
-                    hmap.Add("appName", appName);
-                    hmap.Add("windowName", appPageName);
-                    hmap.Add("testName", testName);
-                    hmap.Add("viewportWidth", viewportWidth);
-                    hmap.Add("viewportHeight", viewportHeight);
-                    break;
-                case 4:
-                    hmap.Add("url", baseUrl + "app_v2.html");
-                    hmap.Add("appName", appName);
-                    hmap.Add("windowName", appPageName);
-                    hmap.Add("testName", testName);
-                    hmap.Add("viewportWidth", viewportWidth);
-                    hmap.Add("viewportHeight", viewportHeight);
-                    break;
+            // Create configuration object
+            Configuration conf = new Configuration();
+            
 
-            }
-            return hmap;
+            // Set test name
+            conf.TestName = "C# VisualGrid demo";
+
+            // Set app name
+            conf.AppName = "Demo app";
+
+            // Add browsers with different viewports
+            conf.AddBrowser(800, 600, Configuration.BrowserType.CHROME);
+            conf.AddBrowser(700, 500, Configuration.BrowserType.CHROME);
+            conf.AddBrowser(1200, 800, Configuration.BrowserType.FIREFOX);
+            conf.AddBrowser(1600, 1200, Configuration.BrowserType.FIREFOX);
+
+            // Add iPhone 4 device emulation in Portraig mode
+            EmulationInfo iphone4 = new EmulationInfo(EmulationInfo.DeviceNameEnum.iPhone_4, Applitools.VisualGrid.ScreenOrientation.Portrait);
+            conf.AddDeviceEmulation(iphone4);
+
+
+
+            // Set the configuration object to eyes
+            eyes.Configuration = conf;
+
+            // Call Open on eyes to initialize a test session
+            eyes.Open(webDriver);
+
+            // check the login page
+            eyes.Check(Target.Window().Fully().WithName("Login page"));
+            webDriver.FindElement(By.Id("log-in")).Click();
+
+            // Check the app page
+            eyes.Check(Target.Window().Fully().WithName("App page"));
+
+            // Close the browser
+            webDriver.Quit();
+
+            //Wait and collect all test results
+            TestResultSummary allTestResults = runner.GetAllTestResults();
+            System.Console.WriteLine(allTestResults);
         }
-
 
     }
 }
