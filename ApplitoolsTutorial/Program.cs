@@ -82,4 +82,4 @@ using Configuration = Applitools.Selenium.Configuration;
         }
 
     }
-}
+//}
