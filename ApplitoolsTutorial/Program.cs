@@ -6,8 +6,8 @@ using OpenQA.Selenium.Chrome;
 using Configuration = Applitools.Selenium.Configuration;
 
 
-namespace ApplitoolsTutorial
-{
+//namespace ApplitoolsTutorial
+//{
 
     class Program
     {
