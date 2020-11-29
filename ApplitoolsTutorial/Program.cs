@@ -35,7 +35,7 @@ namespace ApplitoolsTutorial
             Eyes eyes = new Eyes(runner);
 
             //Set the Applitools API KEY here or as an environment variable "APPLITOOLS_API_KEY"
-            eyes.ApiKey = "APPLITOOLS_API_KEY";
+            eyes.ApiKey = "F14XisZHkSsBUkObF9puHR104mxuXUsVL2zAVd7x49bps110";
 
 
             // Create configuration object
